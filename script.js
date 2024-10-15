@@ -39,7 +39,7 @@ const boxes = document.querySelectorAll('.box');
 boxes.forEach((box) => {
   const boxId = box.getAttribute('data-id');
   const newNameElement = document.getElementById(`newName${boxId}`);
-  const originalLink = box.getAttribute('href');
+  const downloadLink = box.getAttribute('data-download-link');
 
   // Set the manual name
   if (manualNames[boxId]) {
@@ -49,8 +49,11 @@ boxes.forEach((box) => {
   // Prevent default link behavior and handle click
   box.addEventListener('click', (event) => {
     event.preventDefault();
-    // Use the original link from index.html
-    window.open(originalLink, '_blank');
+    if (downloadLink) {
+      window.open(downloadLink, '_blank');
+    } else {
+      console.error(`Download link not found for box ${boxId}`);
+    }
   });
 });
 
@@ -91,5 +94,21 @@ function updateBoxName(boxId, newName) {
   }
 }
 
+// Function to update download link
+function updateDownloadLink(boxId, newLink) {
+  const box = document.querySelector(`.box[data-id="${boxId}"]`);
+  if (box) {
+    box.setAttribute('data-download-link', newLink);
+    const linkElement = box.querySelector('p');
+    if (linkElement) {
+      linkElement.textContent = `رابط التنزيل: ${newLink}`;
+    }
+    console.log(`Updated download link for box ${boxId} to ${newLink}`);
+  } else {
+    console.error(`Box with id ${boxId} not found`);
+  }
+}
+
 // Example usage:
 // updateBoxName(1, 'تطبيق جديد 1');
+// updateDownloadLink(1, 'new-app1.apk');
