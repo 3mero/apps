@@ -39,28 +39,18 @@ const boxes = document.querySelectorAll('.box');
 boxes.forEach((box) => {
   const boxId = box.getAttribute('data-id');
   const newNameElement = document.getElementById(`newName${boxId}`);
-
-  // Get the stored link from LocalStorage
-  const storedLink = localStorage.getItem(`apkLink${boxId}`);
-
-  // Update the href attribute with the stored link if available
-  if (storedLink) {
-    box.setAttribute('href', storedLink);
-  }
+  const originalLink = box.getAttribute('href');
 
   // Set the manual name
   if (manualNames[boxId]) {
     newNameElement.textContent = manualNames[boxId];
-    localStorage.setItem(`apkName${boxId}`, manualNames[boxId]);
   }
 
   // Prevent default link behavior and handle click
   box.addEventListener('click', (event) => {
     event.preventDefault();
-    const currentLink = box.getAttribute('href');
-    // Here you can implement your logic for handling the APK download
-    // For example, you might want to open it in a new tab:
-    window.open(currentLink, '_blank');
+    // Use the original link from index.html
+    window.open(originalLink, '_blank');
   });
 });
 
@@ -89,24 +79,12 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-// Function to update APK link
-function updateAPKLink(boxId, newLink) {
-  const box = document.querySelector(`.box[data-id="${boxId}"]`);
-  if (box) {
-    box.setAttribute('href', newLink);
-    localStorage.setItem(`apkLink${boxId}`, newLink);
-    console.log(`Updated link for box ${boxId} to ${newLink}`);
-  } else {
-    console.error(`Box with id ${boxId} not found`);
-  }
-}
-
 // Function to update box name
 function updateBoxName(boxId, newName) {
   const newNameElement = document.getElementById(`newName${boxId}`);
   if (newNameElement) {
     newNameElement.textContent = newName;
-    localStorage.setItem(`apkName${boxId}`, newName);
+    manualNames[boxId] = newName;
     console.log(`Updated name for box ${boxId} to ${newName}`);
   } else {
     console.error(`New name element for box ${boxId} not found`);
@@ -114,5 +92,4 @@ function updateBoxName(boxId, newName) {
 }
 
 // Example usage:
-// updateAPKLink(1, 'https://example.com/new-app1.apk');
 // updateBoxName(1, 'تطبيق جديد 1');
