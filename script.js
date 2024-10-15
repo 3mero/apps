@@ -10,13 +10,14 @@ boxes.forEach((box) => {
   const storedLink = localStorage.getItem(`apkLink${boxId}`);
   const storedName = localStorage.getItem(`apkName${boxId}`);
 
-  // إذا كان الرابط مختلفًا، قم بإنشاء اسم جديد وتخزين الرابط الجديد
+  // إذا كان الرابط مختلفًا فقط، قم بتخزين الرابط الجديد ولكن لا تطلب اسماً
   if (storedLink !== apkLink) {
-    const newName = prompt(`أدخل اسماً جديداً لصندوق ${boxId}:`, `اسم جديد`);
-    if (newName) {
-      localStorage.setItem(`apkLink${boxId}`, apkLink);
-      localStorage.setItem(`apkName${boxId}`, newName);
-      newNameElement.textContent = newName;
+    localStorage.setItem(`apkLink${boxId}`, apkLink);
+    // إذا كان هناك اسم مخزن بالفعل، قم بعرضه
+    if (storedName) {
+      newNameElement.textContent = storedName;
+    } else {
+      newNameElement.textContent = ''; // عدم عرض أي شيء في حال عدم وجود اسم
     }
   } else {
     // إذا كان الرابط لم يتغير، عرض الاسم المخزن
