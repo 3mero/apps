@@ -1,17 +1,17 @@
-// اسم ذاكرة التخزين المؤقت
+// Cache name
 const CACHE_NAME = 'apk-store-cache-v1';
-// الملفات التي سيتم تخزينها مؤقتًا
+// Files to cache
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png'
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './manifest.json',
+  './icon-192x192.png',
+  './icon-512x512.png'
 ];
 
-// تثبيت Service Worker وتخزين الملفات مؤقتًا
+// Install Service Worker and cache files
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -22,7 +22,7 @@ self.addEventListener('install', function(event) {
   );
 });
 
-// تفعيل Service Worker وإزالة التخزين المؤقت القديم إذا تم تحديثه
+// Activate Service Worker and remove old caches if updated
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
@@ -38,16 +38,34 @@ self.addEventListener('activate', function(event) {
   );
 });
 
-// إرجاع الملفات المخزنة مؤقتًا عند طلبها
+// Fetch event: return cached files when requested
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request)
       .then(function(response) {
-        // إذا كان الملف مخزن مؤقتًا، يتم إرجاعه
+        // If file is cached, return it
         if (response) {
           return response;
         }
-        return fetch(event.request);
+        // Otherwise, fetch from network
+        return fetch(event.request).then(
+          function(response) {
+            // Check if we received a valid response
+            if(!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+            // Clone the response
+            var responseToCache = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then(function(cache) {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          }
+        );
       })
   );
 });
